@@ -26,6 +26,12 @@ limitations under the License.
           :selectedSample="selectedSample"
           v-on:select="changeSelected"
         />
+        <h3>Numerical Vectors</h3>
+        <VectorChooser
+          :model="model"
+          :selectedSample="selectedSample"
+          v-on:select="changeSelected"
+        />
         <div class="description">This demo allows you to interactively explore
            a 40-dimensional latent space of typefaces. The model used here
            was created by <a href="https://twitter.com/bengiswex">James Wexler</a>,
@@ -81,6 +87,7 @@ import DemoHeader from '../header.vue';
 import BasisDimensions from './components/BasisDimensions.vue';
 import FontChooser from './components/FontChooser.vue';
 import Alphabet from './components/Alphabet.vue';
+import VectorChooser from './components/VectorChooser.vue';
 import {FontModel} from './utils/FontModel';
 import {Array1D} from 'deeplearn';
 
@@ -91,6 +98,7 @@ export default {
     DemoFooter,
     DemoHeader,
     FontChooser,
+    VectorChooser,
   },
   data() {
     return {
