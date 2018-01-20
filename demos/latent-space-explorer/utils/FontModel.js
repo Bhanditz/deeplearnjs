@@ -37,6 +37,7 @@ export class FontModel {
         }
     }
     load(cb) {
+        // Load the network weights from the learnjs checkpoint zoo.
         const checkpointLoader = new CheckpointLoader('https://storage.googleapis.com/learnjs-data/checkpoint_zoo/fonts/');
         checkpointLoader.getAllVariables().then(vars => {
             this.variables = vars;
@@ -75,7 +76,8 @@ export class FontModel {
             }
             const finalWeights = this.variables['fully_connected/weights'];
             const finalBiases = this.variables['fully_connected/biases'];
-            const finalOutput = this.math.sigmoid(this.math.add(this.math.vectorTimesMatrix(lastOutput, finalWeights), finalBiases));
+            // Faster than the sigmoid used to train: just clip to [-1, 1].
+            const finalOutput = this.math.clip(this.math.add(this.math.vectorTimesMatrix(lastOutput, finalWeights), finalBiases), -1, 1);
             // Convert the inferred tensor to the proper scaling then draw it.
             const scaled = this.math.scalarTimesArray(this.multiplierScalar, finalOutput);
             return this.math.scalarMinusArray(this.multiplierScalar, scaled);
