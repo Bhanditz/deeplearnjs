@@ -11,40 +11,30 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
-
-import {Queue} from './ChunkedQueue';
-
+import { Queue } from './ChunkedQueue';
 export class Cache {
-  private thisArg: object;
-  private fn: (args: Array<{}>) => void;
-  private queue = new Queue();
-  private _paused = false;
-
-  constructor(thisArg: object, fn: (args: Array<{}>) => void) {
-    this.thisArg = thisArg;
-    this.fn = fn;
-
-    this.queue.interval = 10;
-    this.queue.elementsPerChunk = 20;
-  }
-
-  get(id: number, argsArray: Array<{}>) {
-    // TODO(shancarter) actually cache/retrieve the values.
-
-    return new Promise((resolve, reject) => {
-      const value = this.fn.call(this.thisArg, argsArray);
-      this.queue.add(() => {
-        this.fn.call(this.thisArg, argsArray);
-        resolve(value);
-      }, id, 0);
-    });
-  }
-
-  set paused(p: boolean) {
-    this._paused = p;
-  }
-
-  get paused() {
-    return this._paused;
-  }
+    constructor(thisArg, fn) {
+        this.queue = new Queue();
+        this._paused = false;
+        this.thisArg = thisArg;
+        this.fn = fn;
+        this.queue.interval = 10;
+        this.queue.elementsPerChunk = 20;
+    }
+    get(id, argsArray) {
+        // TODO(shancarter) actually cache/retrieve the values.
+        return new Promise((resolve, reject) => {
+            const value = this.fn.call(this.thisArg, argsArray);
+            this.queue.add(() => {
+                this.fn.call(this.thisArg, argsArray);
+                resolve(value);
+            }, id, 0);
+        });
+    }
+    set paused(p) {
+        this._paused = p;
+    }
+    get paused() {
+        return this._paused;
+    }
 }

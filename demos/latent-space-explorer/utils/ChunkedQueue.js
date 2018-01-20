@@ -11,73 +11,53 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
-
-interface QueueItem {
-  cb: () => void;
-  id: number;
-  priority: number;
-}
-
 export class Queue {
-  interval: number;
-  elementsPerChunk: number;
-  private timeoutID: number;
-  private running: boolean;
-  private queue: QueueItem[];
-
-  constructor() {
-    this.interval = 1000;
-    this.elementsPerChunk = 1;
-    this.timeoutID = -1;
-    this.clear();
-  }
-
-  add(cb: () => void, id: number, priority: number) {
-    this.remove(id);
-    if (id == null) {
-      id = -1;
+    constructor() {
+        this.interval = 1000;
+        this.elementsPerChunk = 1;
+        this.timeoutID = -1;
+        this.clear();
     }
-    if (priority == null) {
-      priority = -1;
+    add(cb, id, priority) {
+        this.remove(id);
+        if (id == null) {
+            id = -1;
+        }
+        if (priority == null) {
+            priority = -1;
+        }
+        this.queue.push({ cb, id, priority });
+        this.queue.sort((a, b) => a.priority - b.priority);
+        this.kick();
     }
-    this.queue.push({cb, id, priority});
-    this.queue.sort((a, b) => a.priority - b.priority);
-    this.kick();
-  }
-
-  clear() {
-    clearTimeout(this.timeoutID);
-    this.queue = [];
-    this.running = false;
-  }
-
-  get length() {
-    return this.queue.length;
-  }
-
-  remove(id: number) {
-    this.queue = this.queue.filter(item => id !== item.id);
-  }
-
-  private nextChunk() {
-    return this.queue.splice(-this.elementsPerChunk);
-  }
-
-  private kick() {
-    if (!this.running) {
-      this.running = true;
-      this.timeoutID = window.setTimeout(() => this.run(), this.interval);
+    clear() {
+        clearTimeout(this.timeoutID);
+        this.queue = [];
+        this.running = false;
     }
-  }
-
-  private run() {
-    const chunk = this.nextChunk();
-    chunk.forEach((item) => {
-      item.cb();
-    });
-    this.running = false;
-    if (this.queue.length) {
-      this.kick();
+    get length() {
+        return this.queue.length;
     }
-  }
+    remove(id) {
+        this.queue = this.queue.filter(item => id !== item.id);
+    }
+    nextChunk() {
+        return this.queue.splice(-this.elementsPerChunk);
+    }
+    kick() {
+        if (!this.running) {
+            this.running = true;
+            this.timeoutID = window.setTimeout(() => this.run(), this.interval);
+        }
+    }
+    run() {
+        const chunk = this.nextChunk();
+        chunk.forEach((item) => {
+            item.cb();
+        });
+        this.running = false;
+        if (this.queue.length) {
+            this.kick();
+        }
+    }
 }
