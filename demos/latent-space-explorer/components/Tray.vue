@@ -26,7 +26,7 @@ limitations under the License.
         :displayWidth="sampleWidth"
         :displayHeight="sampleWidth"
         :model="model"
-        :character="modelData"
+        :modelData="modelData"
         :sample="sample.sample"
       />
     <div
