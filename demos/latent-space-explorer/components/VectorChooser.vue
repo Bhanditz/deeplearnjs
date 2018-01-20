@@ -7,14 +7,19 @@
     <button @click="selectVector(index)">&rarr;</button>
     <button @click="deleteVector(index)">x</button>
   </div>
-  <div class="vector">
+  <div class="operation">
   <button @click="saveVector()">Save current sample</button>
+  </div>
+  <div class="operation">
+  <!-- TODO: Change this button to do something interesting -->
+  <button @click="applyVectorMath()">Apply vector math</button>
   </div>
 </div>
 </template>
 
 <script>
 import {Array1D, ENV} from 'deeplearn';
+const math = ENV.math;
 
 export default {
   props: {
@@ -36,6 +41,13 @@ export default {
     selectVector(index) {
       this.$emit("select", { selectedSample:
            Array1D.new(this.vectors[index].text.split(',').map(parseFloat))});
+    },
+    // TODO: Add useful vector space operations here -->
+    applyVectorMath() {
+      this.$emit("select", { selectedSample:
+           math.add(this.selectedSample,
+               Array1D.new([0.1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])) } )
     }
   }
 }
@@ -80,7 +92,7 @@ export default {
 </script>
 
 <style scoped>
-.vector {
+.vector, .operation {
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   white-space: nowrap;
 }
