@@ -95,8 +95,8 @@ export default {
   data() {
     return {
       model: undefined,
-      modelData: "A",
-      numSamples: 9,
+      modelData: "G",
+      numSamples: 5,
       range: 0.4,
       width: 400,
       dimSliderVals: [],
