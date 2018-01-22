@@ -25,8 +25,7 @@ export default {
   props: {
     selectedSample: { },
     model: { },
-    vectors: { type: Array, default: () => [ { text: "0,0,0,0,0,0,0,0,0,0,0," +
-      "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" } ] }
+    vectors: { type: Array, default: () => [ { text: "0" } ] }
   },
   methods: {
     saveVector() {
@@ -39,56 +38,31 @@ export default {
       this.vectors.splice(index, 1);
     },
     selectVector(index) {
-      this.$emit("select", { selectedSample:
-           Array1D.new(this.vectors[index].text.split(',').map(parseFloat))});
+      this.$emit("select", { selectedSample: this.model.fixdim(
+           Array1D.new(this.vectors[index].text.split(',').map(parseFloat)))});
     },
     // TODO: Add useful vector space operations here -->
     applyVectorMath() {
       this.$emit("select", { selectedSample:
-           math.add(this.selectedSample,
-               Array1D.new([0.1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])) } )
+           math.add(this.selectedSample, this.model.fixdim(
+               Array1D.new([0.1,0,0,0]))) } )
     }
-  }
-}
-/*
-export default {
-  components: {
-    Sample
-  },
-  data() {
-    return {
-      width: 20,
-      visible: true,
-      letters: "ABCDEFG".split("")
-    }
-  },
-  props: {
-    modelData: { type: String, default: "A" },
-    selectedSample: { },
-    model: { },
-    samples: { type: Array, default: () => [
-      zero, crispSerif, serifItalic, serifBlackItalic, sansLight, casual,
-      dotMatrix] }
   },
   watch: {
     model: function(val) {
-      this.select(this.samples[0], true);
+      for (let i = 0; i < this.vectors.length; ++i) {
+        let arr = this.vectors[i].text.split(',');
+        if (arr.length > this.model.dimensions) {
+            arr = arr.slice(0, this.model.dimensions);
+        }
+        while (arr.length < this.model.dimensions) {
+            arr.push('0');
+        }
+        this.vectors[i].text = arr.join(',');
+      }
     }
   },
-  methods: {
-    deleteSample: function(index) {
-      this.samples.splice(index, 1);
-    },
-    select: function(sample, isInitialSelection) {
-      this.$emit("select", {selectedSample: sample, isInitialSelection});
-    },
-    save: function() {
-      this.samples.push(this.selectedSample);
-    }
-  }
 }
-*/
 </script>
 
 <style scoped>

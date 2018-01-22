@@ -120,6 +120,7 @@ export default {
     fonts.load(() => {
       fonts.init();
       this.$refs.loading.remove();
+      this.selectedSample = fonts.fixdim(this.selectedSample);
       this.model = fonts;
       this.range = fonts.range;
       this.resize();
@@ -166,7 +167,11 @@ export default {
       // Set the selected sample and initial dimension slider values based
       // on the provided URL hash.
       this.dimSliderVals = dimVals;
-      this.selectedSample = Array1D.new(dimVals);
+      let arrayVals = Array1D.new(dimVals);
+      if (this.model) {
+          arrayVals = this.model.fixdim(arrayVals);
+      }
+      this.selectedSample = arrayVals;
     }
   }
 

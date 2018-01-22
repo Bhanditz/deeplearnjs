@@ -69,7 +69,7 @@ export default {
       this.samples.splice(index, 1);
     },
     select: function(sample, isInitialSelection) {
-      this.$emit("select", {selectedSample: sample, isInitialSelection});
+      this.$emit("select", {selectedSample: this.model.fixdim(sample), isInitialSelection});
     },
     save: function() {
       this.samples.push(this.selectedSample);
