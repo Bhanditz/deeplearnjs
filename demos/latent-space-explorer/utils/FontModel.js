@@ -20,7 +20,8 @@ export class FontModel {
     constructor() {
         this.metaData = 'A';
         this.dimensions = 40;
-        this.range = 0.4;
+        this.embedLayer = 0;
+        this.range = 0.5;
         this.inferCache = new Cache(this, this.infer);
         this.numberOfValidChars = 62;
         this.multiplierScalar = Scalar.new(255);
@@ -54,6 +55,18 @@ export class FontModel {
     init() {
         this.math = ENV.math;
     }
+    fixdim(embedding) {
+        if (!embedding) {
+            return embedding;
+        }
+        const inputVector = embedding.as1D();
+        if (inputVector.shape[0] < this.dimensions) {
+            return this.math.concat1D(inputVector, Array1D.zeros([this.dimensions - inputVector.shape[0]]));
+        } else if (inputVector.shape[0] > this.dimensions) {
+            return this.math.slice1D(inputVector, 0, this.dimensions);
+        }
+        return inputVector;
+    }
     infer(args) {
         const embedding = args[0];
         const ctx = args[1];
@@ -66,11 +79,24 @@ export class FontModel {
         const adjusted = this.math.scope(keep => {
             const idx = Array1D.new([charId]);
             const onehotVector = this.math.oneHot(idx, this.numberOfValidChars).as1D();
-            const inputData = this.math.concat1D(embedding.as1D(), onehotVector);
-            let lastOutput = inputData;
+            const inputChar = this.math.concat1D(Array1D.zeros([40]), onehotVector);
+            let lastOutput = inputChar;
             for (let i = 0; i < NUM_LAYERS; i++) {
+
+
                 const weights = this.variables[`Stack/fully_connected_${i + 1}/weights`];
                 const biases = this.variables[`Stack/fully_connected_${i + 1}/biases`];
+                if (i == this.embedLayer) {
+                    // Apply the requested embedding at the specified layer.
+                    let slicedEmbed = embedding;
+                    if (slicedEmbed.shape[0] < weights.shape[0]) {
+                        slicedEmbed = this.math.concat1D(embedding.as1D(), Array1D.zeros([weights.shape[0] - slicedEmbed.shape[0]]));
+                    }
+                    if (slicedEmbed.shape[0] > weights.shape[0]) {
+                        slicedEmbed = this.math.slice1D(slicedEmbed, 0, weights.shape[0]);
+                    }
+                    lastOutput = this.math.add(lastOutput, slicedEmbed);
+                }
                 lastOutput =
                     this.math.relu(this.math.add(this.math.vectorTimesMatrix(lastOutput, weights), biases));
             }
