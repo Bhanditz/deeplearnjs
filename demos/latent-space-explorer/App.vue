@@ -103,7 +103,7 @@ export default {
   data() {
     return {
       model: undefined,
-      modelData: "G",
+      modelData: "0",
       numSamples: 5,
       range: 0.4,
       width: 400,
@@ -122,6 +122,7 @@ export default {
       this.$refs.loading.remove();
       this.selectedSample = fonts.fixdim(this.selectedSample);
       this.model = fonts;
+      this.modelData = fonts.metaData;
       this.range = fonts.range;
       this.resize();
     });

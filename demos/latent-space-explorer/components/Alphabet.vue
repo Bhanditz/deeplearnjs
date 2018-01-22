@@ -42,7 +42,7 @@ export default {
       width: 48,
       visible: true,
       sections:[
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
+        "abcdefghijklmnopqrstuvwxyz".split("")
       ]
     }
   },

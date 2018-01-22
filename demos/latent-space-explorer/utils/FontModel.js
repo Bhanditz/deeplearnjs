@@ -18,7 +18,7 @@ const NUM_LAYERS = 4;
 const IMAGE_SIZE = 64;
 export class FontModel {
     constructor() {
-        this.metaData = 'A';
+        this.metaData = 'r';
         this.dimensions = 40;
         this.embedLayer = 0;
         this.range = 0.5;
